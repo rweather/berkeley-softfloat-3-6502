@@ -15,4 +15,4 @@ sum_of_sqrts: sum_of_sqrts.c
 	$(COMPILE_C) -o $@ $< $(LINK_OPTIONS)
 
 clean:
-	rm -f $(EXAMPLES)
+	rm -f $(EXAMPLES) *.elf
