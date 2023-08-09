@@ -63,6 +63,8 @@ routines without compiler support.  Eventually this library or something
 like it may be integrated into LLVM-MOS so that you can use normal
 floating-point C code.
 
+There are some more examples in the `examples` directory.
+
 Original README
 ---------------
 
