@@ -3,7 +3,7 @@ Berkeley SoftFloat Release 3e for 6502 Microprocessors
 ======================================================
 
 This repository contains an experimental floating-point implementation
-for 6502 microprocessors based on Berkely SoftFloat.  It is designed
+for 6502 microprocessors based on Berkeley SoftFloat.  It is designed
 to be compiled using [LLVM-MOS](https://llvm-mos.org/wiki/Welcome).
 
 Building
