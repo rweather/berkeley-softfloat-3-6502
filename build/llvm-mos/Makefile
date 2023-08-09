@@ -44,6 +44,7 @@ SOFTFLOAT_INSTALL_DIR ?= $(shell mos-common-clang --version | grep '^InstalledDi
 DELETE = rm -f
 C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
 COMPILE_C = mos-common-clang -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -Os -o $@
+COMPILE_ASM = mos-common-clang -x assembler-with-cpp -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -o $@
 MAKELIB = llvm-ar crs $@
 COPY = cp
 
@@ -298,7 +299,15 @@ OBJS_OTHERS = \
   f128M_le_quiet$(OBJ) \
   f128M_lt_quiet$(OBJ) \
 
-OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS)
+OBJS_ASM = \
+  a_countLeadingZeros16$(OBJ) \
+  a_countLeadingZeros32$(OBJ) \
+  a_countLeadingZeros64$(OBJ) \
+  a_shiftRightJam32$(OBJ) \
+  a_shiftRightJam64$(OBJ) \
+  a_shortShiftRightJam64$(OBJ) \
+
+OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS) $(OBJS_ASM)
 
 $(OBJS_ALL): \
   $(OTHER_HEADERS) platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
@@ -313,6 +322,9 @@ $(OBJS_PRIMITIVES) $(OBJS_OTHERS): %$(OBJ): $(SOURCE_DIR)/%.c
 
 $(OBJS_SPECIALIZE): %$(OBJ): $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/%.c
 	$(COMPILE_C) $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/$*.c
+
+$(OBJS_ASM): %$(OBJ): $(SOURCE_DIR)/llvm-mos/asm/%.S
+	$(COMPILE_ASM) $(SOURCE_DIR)/llvm-mos/asm/$*.S
 
 libsoftfloat$(LIB): $(OBJS_ALL)
 	$(DELETE) $@

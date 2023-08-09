@@ -47,3 +47,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*----------------------------------------------------------------------------
 *----------------------------------------------------------------------------*/
 #define THREAD_LOCAL
+
+/*----------------------------------------------------------------------------
+* Override definitions in primitives.h
+*----------------------------------------------------------------------------*/
+
+/* Shift right while jamming shifted out bits back into the LSB */
+__attribute__((leaf)) uint64_t softfloat_a_shortShiftRightJam64( uint64_t a, uint_fast8_t dist );
+__attribute__((leaf)) uint32_t softfloat_a_shiftRightJam32( uint32_t a, uint_fast16_t dist );
+__attribute__((leaf)) uint64_t softfloat_a_shiftRightJam64( uint64_t a, uint_fast32_t dist );
+#define softfloat_shortShiftRightJam64 softfloat_a_shortShiftRightJam64
+#define softfloat_shiftRightJam32 softfloat_a_shiftRightJam32
+#define softfloat_shiftRightJam64 softfloat_a_shiftRightJam64
+
+/* Count leading zeroes in words of various sizes */
+__attribute__((leaf)) uint_fast8_t softfloat_a_countLeadingZeros16( uint16_t a );
+__attribute__((leaf)) uint_fast8_t softfloat_a_countLeadingZeros32( uint32_t a );
+__attribute__((leaf)) uint_fast8_t softfloat_a_countLeadingZeros64( uint64_t a );
+#define softfloat_countLeadingZeros16 softfloat_a_countLeadingZeros16
+#define softfloat_countLeadingZeros32 softfloat_a_countLeadingZeros32
+#define softfloat_countLeadingZeros64 softfloat_a_countLeadingZeros64
