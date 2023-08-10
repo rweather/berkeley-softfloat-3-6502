@@ -4,9 +4,15 @@
 COMPILE_C = mos-sim-clang -Os
 LINK_OPTIONS = -lsoftfloat
 
-EXAMPLES = simple_example sum_of_sqrts
+EXAMPLES = \
+	mandelbrot \
+	simple_example \
+	sum_of_sqrts
 
 all: $(EXAMPLES)
+
+mandelbrot: mandelbrot.c
+	$(COMPILE_C) -o $@ $< $(LINK_OPTIONS)
 
 simple_example: simple_example.c
 	$(COMPILE_C) -o $@ $< $(LINK_OPTIONS)
