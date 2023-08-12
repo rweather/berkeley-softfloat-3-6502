@@ -37,7 +37,7 @@
 SOURCE_DIR ?= ../../source
 SPECIALIZE_TYPE ?= 8086
 
-SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5
+SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5 -DSOFTFLOAT_MOS_6502
 
 SOFTFLOAT_INSTALL_DIR ?= $(shell mos-common-clang --version | grep '^InstalledDir' | sed -e '1,$$s/^InstalledDir: //g')/../mos-platform/common
 
