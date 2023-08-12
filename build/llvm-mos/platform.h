@@ -67,3 +67,8 @@ __attribute__((leaf)) uint_fast8_t softfloat_a_countLeadingZeros64( uint64_t a )
 #define softfloat_countLeadingZeros16 softfloat_a_countLeadingZeros16
 #define softfloat_countLeadingZeros32 softfloat_a_countLeadingZeros32
 #define softfloat_countLeadingZeros64 softfloat_a_countLeadingZeros64
+
+/* Multiply two 32-bit values with a 64-bit result, shift it right
+ * by 32 bits, and jam in the shifted-out bits.  This is faster than
+ * upcasting and doing a full 64-bit by 64-bit multiply. */
+__attribute__((leaf)) uint_fast32_t softfloat_a_mul32x32Jam( uint_fast32_t a, uint_fast32_t b );

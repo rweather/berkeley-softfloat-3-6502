@@ -104,7 +104,11 @@ float32_t f32_mul( float32_t a, float32_t b )
     expZ = expA + expB - 0x7F;
     sigA = (sigA | 0x00800000)<<7;
     sigB = (sigB | 0x00800000)<<8;
+#if defined(SOFTFLOAT_MOS_6502)
+    sigZ = softfloat_a_mul32x32Jam( sigA, sigB );
+#else
     sigZ = softfloat_shortShiftRightJam64( (uint_fast64_t) sigA * sigB, 32 );
+#endif
     if ( sigZ < 0x40000000 ) {
         --expZ;
         sigZ <<= 1;
