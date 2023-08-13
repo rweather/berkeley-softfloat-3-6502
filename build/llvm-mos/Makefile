@@ -54,7 +54,7 @@ LIB = .a
 OTHER_HEADERS =
 
 .PHONY: all
-all: libsoftfloat$(LIB)
+all: libbsoftfloat$(LIB)
 
 OBJS_PRIMITIVES = \
   s_compare96M$(OBJ) \
@@ -327,16 +327,16 @@ $(OBJS_SPECIALIZE): %$(OBJ): $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/%.c
 $(OBJS_ASM): %$(OBJ): $(SOURCE_DIR)/llvm-mos/asm/%.S
 	$(COMPILE_ASM) $(SOURCE_DIR)/llvm-mos/asm/$*.S
 
-libsoftfloat$(LIB): $(OBJS_ALL)
+libbsoftfloat$(LIB): $(OBJS_ALL)
 	$(DELETE) $@
 	$(MAKELIB) $^
 
 .PHONY: clean
 clean:
-	$(DELETE) $(OBJS_ALL) libsoftfloat$(LIB)
+	$(DELETE) $(OBJS_ALL) libbsoftfloat$(LIB)
 
 .PHONY: install
-install: libsoftfloat$(LIB)
-	$(COPY) libsoftfloat$(LIB) $(SOFTFLOAT_INSTALL_DIR)/lib
+install: libbsoftfloat$(LIB)
+	$(COPY) libbsoftfloat$(LIB) $(SOFTFLOAT_INSTALL_DIR)/lib
 	$(COPY) $(SOURCE_DIR)/include/softfloat.h $(SOFTFLOAT_INSTALL_DIR)/include
 	$(COPY) $(SOURCE_DIR)/include/softfloat_types.h $(SOFTFLOAT_INSTALL_DIR)/include

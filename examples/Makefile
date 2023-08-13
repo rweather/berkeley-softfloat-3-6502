@@ -2,7 +2,7 @@
 .PHONY: all clean
 
 COMPILE_C = mos-sim-clang -Os
-LINK_OPTIONS = -lsoftfloat
+LINK_OPTIONS = -lbsoftfloat
 
 EXAMPLES = \
 	mandelbrot \

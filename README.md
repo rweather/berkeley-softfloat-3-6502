@@ -55,7 +55,7 @@ The following example computes ((1 + 2) * 3) with an expected result of 9:
 
 Compile and run the example as follows:
 
-    mos-sim-clang -o example example.c -lsoftfloat
+    mos-sim-clang -o example example.c -lbsoftfloat
     mos-sim example
 
 As can be seen, it is a little awkward to use the floating-point
