@@ -35,16 +35,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 .text
 
 ;
-; uint_fast32_t softfloat_a_mul32x32Jam( uint_fast32_t a, uint_fast32_t b );
+; uint_fast64_t softfloat_a_mul32x32Helper( uint_fast32_t a, uint_fast32_t b );
 ;
-; result = shortShiftRightJam64(((uint64_t)a) * b, 32);
+; result = ((uint64_t)a) * b
 ;
 ; "a" is in A:X:rc2:rc3 on entry.  "b" is in rc4:rc5:rc6:rc7 on entry.
-; "result" is in A:X:rc2:rc3 on exit.
+; "result" is in rc8:rc9:rc10:rc11:rc12:rc13:rc14:rc15 on exit.
 ;
-.global softfloat_a_mul32x32Jam
-.section .text.softfloat_a_mul32x32Jam,"ax",@progbits
-softfloat_a_mul32x32Jam:
+; The result is not compatible with llvm-mos calling conventions.
+; Callers to this function must move the result to the correct registers.
+;
+.section .text.softfloat_a_mul32x32Helper,"ax",@progbits
+softfloat_a_mul32x32Helper:
   ;
   ; Set the intermediate 64-bit result to zero.
   ;
@@ -63,8 +65,8 @@ softfloat_a_mul32x32Jam:
   sta __rc16
   stx __rc17
   ldy #32
-  bne .Lsoftfloat_a_mul32x32Jam_skip_mul2
-.Lsoftfloat_a_mul32x32Jam_loop:
+  bne .Lsoftfloat_a_mul32x32Helper_skip_mul2
+.Lsoftfloat_a_mul32x32Helper_loop:
   ;
   ; Multiply the result by 2.
   ;
@@ -76,7 +78,7 @@ softfloat_a_mul32x32Jam:
   rol __rc13
   rol __rc14
   rol __rc15
-.Lsoftfloat_a_mul32x32Jam_skip_mul2:
+.Lsoftfloat_a_mul32x32Helper_skip_mul2:
   ;
   ; Is the high bit of "a" set to 1?
   ;
@@ -84,7 +86,7 @@ softfloat_a_mul32x32Jam:
   rol __rc17
   rol __rc2
   rol __rc3
-  bcc .Lsoftfloat_a_mul32x32Jam_no_add
+  bcc .Lsoftfloat_a_mul32x32Helper_no_add
   ;
   ; Add "b" to the intermediate result.
   ;
@@ -105,20 +107,88 @@ softfloat_a_mul32x32Jam:
   ; Shortcut the rest if we don't need to do carry propagation
   ; into the high word of the result.
   ;
-  bcc .Lsoftfloat_a_mul32x32Jam_no_add
+  bcc .Lsoftfloat_a_mul32x32Helper_no_add
   inc __rc12
-  bne .Lsoftfloat_a_mul32x32Jam_no_add
+  bne .Lsoftfloat_a_mul32x32Helper_no_add
   inc __rc13
-  bne .Lsoftfloat_a_mul32x32Jam_no_add
+  bne .Lsoftfloat_a_mul32x32Helper_no_add
   inc __rc14
-  bne .Lsoftfloat_a_mul32x32Jam_no_add
+  bne .Lsoftfloat_a_mul32x32Helper_no_add
   inc __rc15
   ;
   ; Bottom of the multiplication loop.
   ;
-.Lsoftfloat_a_mul32x32Jam_no_add:
+.Lsoftfloat_a_mul32x32Helper_no_add:
   dey
-  bne .Lsoftfloat_a_mul32x32Jam_loop
+  bne .Lsoftfloat_a_mul32x32Helper_loop
+  rts
+
+;
+; uint_fast64_t softfloat_a_mul32x32( uint_fast32_t a, uint_fast32_t b );
+;
+; result = ((uint64_t)a) * b
+;
+; "a" is in A:X:rc2:rc3 on entry.  "b" is in rc4:rc5:rc6:rc7 on entry.
+; "result" is in A:X:rc2:rc3:rc4:rc5:rc6:rc7 on exit.
+;
+.global softfloat_a_mul32x32
+.section .text.softfloat_a_mul32x32,"ax",@progbits
+softfloat_a_mul32x32:
+  jsr softfloat_a_mul32x32Helper
+  ;
+  ; Copy the result to the correct registers.
+  ;
+  lda __rc15
+  sta __rc7
+  lda __rc14
+  sta __rc6
+  lda __rc13
+  sta __rc5
+  lda __rc12
+  sta __rc4
+  lda __rc11
+  sta __rc3
+  lda __rc10
+  sta __rc2
+  ldx __rc9
+  lda __rc8
+  rts
+
+;
+; uint_fast32_t softfloat_a_mul32x32High( uint_fast32_t a, uint_fast32_t b );
+;
+; result = (((uint64_t)a) * b) >> 32
+;
+; "a" is in A:X:rc2:rc3 on entry.  "b" is in rc4:rc5:rc6:rc7 on entry.
+; "result" is in A:X:rc2:rc3 on exit.
+;
+.global softfloat_a_mul32x32High
+.section .text.softfloat_a_mul32x32High,"ax",@progbits
+softfloat_a_mul32x32High:
+  jsr softfloat_a_mul32x32Helper
+  ;
+  ; Copy the result to the correct registers.
+  ;
+  lda __rc15
+  sta __rc3
+  lda __rc14
+  sta __rc2
+  ldx __rc13
+  lda __rc12
+  rts
+
+;
+; uint_fast32_t softfloat_a_mul32x32Jam( uint_fast32_t a, uint_fast32_t b );
+;
+; result = shortShiftRightJam64(((uint64_t)a) * b, 32);
+;
+; "a" is in A:X:rc2:rc3 on entry.  "b" is in rc4:rc5:rc6:rc7 on entry.
+; "result" is in A:X:rc2:rc3 on exit.
+;
+.global softfloat_a_mul32x32Jam
+.section .text.softfloat_a_mul32x32Jam,"ax",@progbits
+softfloat_a_mul32x32Jam:
+  jsr softfloat_a_mul32x32Helper
   ;
   ; If the low word is non-zero, then we need to jam a 1 bit
   ; into the high word of the result.

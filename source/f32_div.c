@@ -133,7 +133,11 @@ float32_t f32_div( float32_t a, float32_t b )
         sigA <<= 7;
     }
     sigB <<= 8;
+#ifdef SOFTFLOAT_MOS_6502
+    sigZ = softfloat_a_mul32x32High( sigA, softfloat_approxRecip32_1( sigB ) );
+#else
     sigZ = ((uint_fast64_t) sigA * softfloat_approxRecip32_1( sigB ))>>32;
+#endif
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     sigZ += 2;
@@ -141,6 +145,8 @@ float32_t f32_div( float32_t a, float32_t b )
         sigZ &= ~3;
 #ifdef SOFTFLOAT_FAST_INT64
         rem = ((uint_fast64_t) sigA<<31) - (uint_fast64_t) sigZ * sigB;
+#elif defined(SOFTFLOAT_MOS_6502)
+        rem = ((uint_fast64_t) sigA<<32) - softfloat_a_mul32x32( (sigZ<<1), sigB );
 #else
         rem = ((uint_fast64_t) sigA<<32) - (uint_fast64_t) (sigZ<<1) * sigB;
 #endif

@@ -54,10 +54,17 @@ uint32_t softfloat_approxRecip32_1( uint32_t a )
     eps = (uint16_t) (a>>11);
     r0 = softfloat_approxRecip_1k0s[index]
              - ((softfloat_approxRecip_1k1s[index] * (uint_fast32_t) eps)>>20);
+#ifdef SOFTFLOAT_MOS_6502
+    sigma0 = ~(uint_fast32_t) (softfloat_a_mul32x32(r0, a)>>7);
+    r = ((uint_fast32_t) r0<<16) + (uint_fast32_t)(softfloat_a_mul32x32(r0, sigma0)>>24);
+    sqrSigma0 = softfloat_a_mul32x32High(sigma0, sigma0);
+    r += softfloat_a_mul32x32High(r, sqrSigma0)>>16;
+#else
     sigma0 = ~(uint_fast32_t) ((r0 * (uint_fast64_t) a)>>7);
     r = ((uint_fast32_t) r0<<16) + ((r0 * (uint_fast64_t) sigma0)>>24);
     sqrSigma0 = ((uint_fast64_t) sigma0 * sigma0)>>32;
     r += ((uint32_t) r * (uint_fast64_t) sqrSigma0)>>48;
+#endif
     return r;
 
 }
