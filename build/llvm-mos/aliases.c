@@ -155,10 +155,20 @@ PREFIX float64_t trunc(float64_t x)
 
 PREFIX float32_t roundf(float32_t x)
 {
-    return f32_roundToInt(x, softfloat_round_near_even, false);
+    return f32_roundToInt(x, softfloat_round_near_maxMag, false);
 }
 
 PREFIX float64_t round(float64_t x)
+{
+    return f64_roundToInt(x, softfloat_round_near_maxMag, false);
+}
+
+PREFIX float32_t roundevenf(float32_t x)
+{
+    return f32_roundToInt(x, softfloat_round_near_even, false);
+}
+
+PREFIX float64_t roundeven(float64_t x)
 {
     return f64_roundToInt(x, softfloat_round_near_even, false);
 }
