@@ -34,10 +34,16 @@
 #
 #=============================================================================
 
+# Use "make SOFTFLOAT_NO_ASM=1" to disable the assembly speedups.
+
 SOURCE_DIR ?= ../../source
 SPECIALIZE_TYPE ?= 8086
 
+ifeq ($(SOFTFLOAT_NO_ASM),1)
+SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5 -DSOFTFLOAT_NO_ASM
+else
 SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5 -DSOFTFLOAT_MOS_6502
+endif
 
 SOFTFLOAT_INSTALL_DIR ?= $(shell mos-common-clang --version | grep '^InstalledDir' | sed -e '1,$$s/^InstalledDir: //g')/../mos-platform/common
 
@@ -299,6 +305,12 @@ OBJS_OTHERS = \
   f128M_le_quiet$(OBJ) \
   f128M_lt_quiet$(OBJ) \
 
+ifeq ($(SOFTFLOAT_NO_ASM),1)
+
+OBJS_ASM =
+
+else
+
 OBJS_ASM = \
   a_countLeadingZeros16$(OBJ) \
   a_countLeadingZeros32$(OBJ) \
@@ -308,6 +320,8 @@ OBJS_ASM = \
   a_shiftRightJam32$(OBJ) \
   a_shiftRightJam64$(OBJ) \
   a_shortShiftRightJam64$(OBJ) \
+
+endif
 
 OBJS_PLATFORM = \
   aliases$(OBJ)

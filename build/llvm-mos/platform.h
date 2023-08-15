@@ -52,6 +52,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * Override definitions in primitives.h
 *----------------------------------------------------------------------------*/
 
+#ifndef SOFTFLOAT_NO_ASM
+
 /* Shift right while jamming shifted out bits back into the LSB */
 __attribute__((leaf)) uint64_t softfloat_a_shortShiftRightJam64( uint64_t a, uint_fast8_t dist );
 __attribute__((leaf)) uint32_t softfloat_a_shiftRightJam32( uint32_t a, uint_fast16_t dist );
@@ -91,3 +93,5 @@ __attribute__((leaf)) uint_fast32_t softfloat_a_mul32x32High( uint_fast32_t a, u
  * by 32 bits, and jam in the shifted-out bits.  This is faster than
  * upcasting and doing a full 64-bit by 64-bit multiply. */
 __attribute__((leaf)) uint_fast32_t softfloat_a_mul32x32Jam( uint_fast32_t a, uint_fast32_t b );
+
+#endif /* SOFTFLOAT_NO_ASM */
