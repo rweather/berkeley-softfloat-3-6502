@@ -121,12 +121,20 @@ float64_t f64_div( float64_t a, float64_t b )
     }
     sigB <<= 11;
     recip32 = softfloat_approxRecip32_1( sigB>>32 ) - 2;
-    sig32Z = ((uint32_t) (sigA>>32) * (uint_fast64_t) recip32)>>32;
     doubleTerm = sig32Z<<1;
+#ifdef SOFTFLOAT_MOS_6502
+    sig32Z = softfloat_a_mul32x32High((uint32_t) (sigA>>32), recip32);
+    rem =
+        ((sigA - softfloat_a_mul32x32(doubleTerm, (uint32_t) (sigB>>32)))<<28)
+            - softfloat_a_mul32x32(doubleTerm, ((uint32_t) sigB>>4));
+    q = softfloat_a_mul32x32High((uint32_t) (rem>>32), recip32) + 4;
+#else
+    sig32Z = ((uint32_t) (sigA>>32) * (uint_fast64_t) recip32)>>32;
     rem =
         ((sigA - (uint_fast64_t) doubleTerm * (uint32_t) (sigB>>32))<<28)
             - (uint_fast64_t) doubleTerm * ((uint32_t) sigB>>4);
     q = (((uint32_t) (rem>>32) * (uint_fast64_t) recip32)>>32) + 4;
+#endif
     sigZ = ((uint_fast64_t) sig32Z<<32) + ((uint_fast64_t) q<<4);
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
@@ -134,9 +142,15 @@ float64_t f64_div( float64_t a, float64_t b )
         q &= ~7;
         sigZ &= ~(uint_fast64_t) 0x7F;
         doubleTerm = q<<1;
+#ifdef SOFTFLOAT_MOS_6502
+        rem =
+            ((rem - softfloat_a_mul32x32(doubleTerm, (uint32_t) (sigB>>32)))<<28)
+                - softfloat_a_mul32x32(doubleTerm, ((uint32_t) sigB>>4));
+#else
         rem =
             ((rem - (uint_fast64_t) doubleTerm * (uint32_t) (sigB>>32))<<28)
                 - (uint_fast64_t) doubleTerm * ((uint32_t) sigB>>4);
+#endif
         if ( rem & UINT64_C( 0x8000000000000000 ) ) {
             sigZ -= 1<<7;
         } else {

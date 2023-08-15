@@ -49,10 +49,17 @@ void softfloat_mul64To128M( uint64_t a, uint64_t b, uint32_t *zPtr )
     a0 = a;
     b32 = b>>32;
     b0 = b;
+#ifdef SOFTFLOAT_MOS_6502
+    z0 = softfloat_a_mul32x32(a0, b0);
+    mid1 = softfloat_a_mul32x32(a32, b0);
+    mid = mid1 + softfloat_a_mul32x32(a0, b32);
+    z64 = softfloat_a_mul32x32(a32, b32);
+#else
     z0 = (uint64_t) a0 * b0;
     mid1 = (uint64_t) a32 * b0;
     mid = mid1 + (uint64_t) a0 * b32;
     z64 = (uint64_t) a32 * b32;
+#endif
     z64 += (uint64_t) (mid < mid1)<<32 | mid>>32;
     mid <<= 32;
     z0 += mid;
