@@ -141,9 +141,15 @@ float16_t f16_div( float16_t a, float16_t b )
              - (((uint_fast32_t) softfloat_approxRecip_1k1s[index]
                      * (sigB & 0x3F))
                     >>10);
+#ifdef SOFTFLOAT_MOS_6502
+    sigZ = softfloat_a_mul16x16High(sigA, r0);
+    rem = (sigA<<10) - softfloat_a_mul16x16(sigZ, sigB);
+    sigZ += softfloat_a_mul16x16(rem, r0)>>26;
+#else
     sigZ = ((uint_fast32_t) sigA * r0)>>16;
     rem = (sigA<<10) - sigZ * sigB;
     sigZ += (rem * (uint_fast32_t) r0)>>26;
+#endif
     /*------------------------------------------------------------------------
     *------------------------------------------------------------------------*/
     ++sigZ;

@@ -303,6 +303,7 @@ OBJS_ASM = \
   a_countLeadingZeros16$(OBJ) \
   a_countLeadingZeros32$(OBJ) \
   a_countLeadingZeros64$(OBJ) \
+  a_mul16x16$(OBJ) \
   a_mul32x32$(OBJ) \
   a_shiftRightJam32$(OBJ) \
   a_shiftRightJam64$(OBJ) \

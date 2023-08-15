@@ -57,7 +57,9 @@ float16_t f16_mul( float16_t a, float16_t b )
     uint_fast16_t magBits;
     struct exp8_sig16 normExpSig;
     int_fast8_t expZ;
+#ifndef SOFTFLOAT_MOS_6502
     uint_fast32_t sig32Z;
+#endif
     uint_fast16_t sigZ, uiZ;
     union ui16_f16 uZ;
 
@@ -105,9 +107,13 @@ float16_t f16_mul( float16_t a, float16_t b )
     expZ = expA + expB - 0xF;
     sigA = (sigA | 0x0400)<<4;
     sigB = (sigB | 0x0400)<<5;
+#ifdef SOFTFLOAT_MOS_6502
+    sigZ = softfloat_a_mul16x16Jam(sigA, sigB);
+#else
     sig32Z = (uint_fast32_t) sigA * sigB;
     sigZ = sig32Z>>16;
     if ( sig32Z & 0xFFFF ) sigZ |= 1;
+#endif
     if ( sigZ < 0x4000 ) {
         --expZ;
         sigZ <<= 1;

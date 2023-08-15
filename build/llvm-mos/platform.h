@@ -68,6 +68,18 @@ __attribute__((leaf)) uint_fast8_t softfloat_a_countLeadingZeros64( uint64_t a )
 #define softfloat_countLeadingZeros32 softfloat_a_countLeadingZeros32
 #define softfloat_countLeadingZeros64 softfloat_a_countLeadingZeros64
 
+/* Multiply two 16-bit values with a 32-bit result. */
+__attribute__((leaf)) uint_fast32_t softfloat_a_mul16x16( uint_fast16_t a, uint_fast16_t b );
+
+/* Multiply two 16-bit values with a 32-bit result, returning the
+ * high 16 bits only. */
+__attribute__((leaf)) uint_fast16_t softfloat_a_mul16x16High( uint_fast16_t a, uint_fast16_t b );
+
+/* Multiply two 16-bit values with a 32-bit result, shift it right
+ * by 16 bits, and jam in the shifted-out bits.  This is faster than
+ * upcasting and doing a full 32-bit by 32-bit multiply. */
+__attribute__((leaf)) uint_fast16_t softfloat_a_mul16x16Jam( uint_fast16_t a, uint_fast16_t b );
+
 /* Multiply two 32-bit values with a 64-bit result. */
 __attribute__((leaf)) uint_fast64_t softfloat_a_mul32x32( uint_fast32_t a, uint_fast32_t b );
 
@@ -79,8 +91,3 @@ __attribute__((leaf)) uint_fast32_t softfloat_a_mul32x32High( uint_fast32_t a, u
  * by 32 bits, and jam in the shifted-out bits.  This is faster than
  * upcasting and doing a full 64-bit by 64-bit multiply. */
 __attribute__((leaf)) uint_fast32_t softfloat_a_mul32x32Jam( uint_fast32_t a, uint_fast32_t b );
-
-/* Divide 64-bit "a" by 32-bit "b" with a 32-bit result.  If the low bits
- * of the result are zero, but the remainder is non-zero, then jam an extra
- * 1 bit into the low bit of the result. */
-__attribute__((leaf)) uint_fast32_t softfloat_a_div64x32Jam( uint_fast64_t a, uint_fast32_t b );
