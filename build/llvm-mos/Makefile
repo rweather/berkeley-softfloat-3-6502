@@ -43,7 +43,7 @@ SOFTFLOAT_INSTALL_DIR ?= $(shell mos-common-clang --version | grep '^InstalledDi
 
 DELETE = rm -f
 C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
-COMPILE_C = mos-common-clang -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -Os -o $@
+COMPILE_C = mos-common-clang -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -Os -Wno-incompatible-library-redeclaration -o $@
 COMPILE_ASM = mos-common-clang -x assembler-with-cpp -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -o $@
 MAKELIB = llvm-ar crs $@
 COPY = cp
@@ -309,7 +309,10 @@ OBJS_ASM = \
   a_shiftRightJam64$(OBJ) \
   a_shortShiftRightJam64$(OBJ) \
 
-OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS) $(OBJS_ASM)
+OBJS_PLATFORM = \
+  aliases$(OBJ)
+
+OBJS_ALL = $(OBJS_PRIMITIVES) $(OBJS_SPECIALIZE) $(OBJS_OTHERS) $(OBJS_ASM) $(OBJS_PLATFORM)
 
 $(OBJS_ALL): \
   $(OTHER_HEADERS) platform.h $(SOURCE_DIR)/include/primitiveTypes.h \
@@ -327,6 +330,9 @@ $(OBJS_SPECIALIZE): %$(OBJ): $(SOURCE_DIR)/$(SPECIALIZE_TYPE)/%.c
 
 $(OBJS_ASM): %$(OBJ): $(SOURCE_DIR)/llvm-mos/asm/%.S
 	$(COMPILE_ASM) $(SOURCE_DIR)/llvm-mos/asm/$*.S
+
+$(OBJS_PLATFORM): %$(OBJ): ./%.c
+	$(COMPILE_C) ./$*.c
 
 libbsoftfloat$(LIB): $(OBJS_ALL)
 	$(DELETE) $@
