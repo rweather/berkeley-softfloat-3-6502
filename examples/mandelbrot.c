@@ -9,6 +9,38 @@
 #define MAXX 75
 #define MAXY 30
 
+#if defined(USE_FLOAT16)
+
+typedef float16_t number_t;
+static number_t four;
+static number_t onethou;
+#define number_init() (four = i32_to_f16(4), onethou = i32_to_f16(1000))
+#define number_add(x, y) f16_add((x), (y))
+#define number_sub(x, y) f16_sub((x), (y))
+#define number_mul(x, y) f16_mul((x), (y))
+#define number_div(x, y) f16_div((x), (y))
+#define number_gt(x, y)  f16_lt((y), (x))
+#define number_four() four
+#define number_from_int(x) (i32_to_f16((x)))
+#define number_from_fixed(x) (f16_div(i32_to_f16((x)), onethou))
+
+#elif defined(USE_FLOAT64)
+
+typedef float64_t number_t;
+static number_t four;
+static number_t onethou;
+#define number_init() (four = i32_to_f64(4), onethou = i32_to_f64(1000))
+#define number_add(x, y) f64_add((x), (y))
+#define number_sub(x, y) f64_sub((x), (y))
+#define number_mul(x, y) f64_mul((x), (y))
+#define number_div(x, y) f64_div((x), (y))
+#define number_gt(x, y)  f64_lt((y), (x))
+#define number_four() four
+#define number_from_int(x) (i32_to_f64((x)))
+#define number_from_fixed(x) (f64_div(i32_to_f64((x)), onethou))
+
+#else // USE_FLOAT32
+
 typedef float32_t number_t;
 static number_t four;
 static number_t onethou;
@@ -21,6 +53,8 @@ static number_t onethou;
 #define number_four() four
 #define number_from_int(x) (i32_to_f32((x)))
 #define number_from_fixed(x) (f32_div(i32_to_f32((x)), onethou))
+
+#endif
 
 // Determine if a point is in the mandelbrot set or not.
 // Returns the palette index to draw for the point.
