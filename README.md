@@ -59,9 +59,7 @@ Compile and run the example as follows:
     mos-sim example
 
 As can be seen, it is a little awkward to use the floating-point
-routines without compiler support.  Eventually this library or something
-like it may be integrated into LLVM-MOS so that you can use normal
-floating-point C code.
+routines without compiler support.  Compiler support is in progress.
 
 There are some more examples in the `examples` directory.
 

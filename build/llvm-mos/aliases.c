@@ -35,6 +35,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * See "llvm/include/llvm/IR/RuntimeLibcalls.def" in the LLVM source code
  * for a list of intrinsics that are expected by LLVM.
+ *
+ * Documentation for the intrinsics:
+ * https://gcc.gnu.org/onlinedocs/gccint/Soft-float-library-routines.html
  */
 
 #include <stdbool.h>
@@ -236,7 +239,10 @@ PREFIX long long llrint(float64_t x)
     return f64_to_i64(x, softfloat_round_near_even, false);
 }
 
-// Comparison operators.
+// Comparison operators.  The specialized comparisons for eq, ne, lt, etc
+// need to be careful to ensure that NaN's give the right compare result.
+// We can take advantage of the structure of the softfloat code to ensure this.
+// https://gcc.gnu.org/onlinedocs/gccint/Soft-float-library-routines.html#Comparison-functions-1
 
 static inline int f32_isnan(float32_t x)
 {
@@ -262,68 +268,84 @@ PREFIX int __unorddf2(float64_t x, float64_t y)
     return f64_isnan(x) || f64_isnan(y);
 }
 
+PREFIX int __cmpsf2(float32_t x, float32_t y)
+{
+    if (f32_lt(x, y))
+        return -1;
+    else if (f32_eq(x, y))
+        return 0;
+    else
+        return 1;
+}
+
+PREFIX int __cmpdf2(float64_t x, float64_t y)
+{
+    if (f64_lt(x, y))
+        return -1;
+    else if (f64_eq(x, y))
+        return 0;
+    else
+        return 1;
+}
+
 PREFIX int __eqsf2(float32_t x, float32_t y)
 {
-    return f32_eq_signaling(x, y);
+    return f32_eq(x, y) ? 0 : 1;
 }
 
 PREFIX int __eqdf2(float64_t x, float64_t y)
 {
-    return f64_eq_signaling(x, y);
+    return f64_eq(x, y) ? 0 : 1;
 }
 
 PREFIX int __nesf2(float32_t x, float32_t y)
 {
-    if (__unordsf2(x, y))
-        return f32_eq_signaling(x, y); // Raise the error.
-    return !f32_eq_signaling(x, y);
+    return f32_eq(x, y) ? 0 : 1;
 }
 
 PREFIX int __nedf2(float64_t x, float64_t y)
 {
-    if (__unorddf2(x, y))
-        return f64_eq_signaling(x, y); // Raise the error.
-    return !f64_eq_signaling(x, y);
+    return f64_eq(x, y) ? 0 : 1;
 }
 
 PREFIX int __ltsf2(float32_t x, float32_t y)
 {
-    return f32_lt(x, y);
+    return f32_lt(x, y) ? -1 : 0;
 }
 
 PREFIX int __ltdf2(float64_t x, float64_t y)
 {
-    return f64_lt(x, y);
+    return f64_lt(x, y) ? -1 : 0;
 }
 
 PREFIX int __lesf2(float32_t x, float32_t y)
 {
-    return f32_le(x, y);
+    return f32_le(x, y) ? -1 : 1;
 }
 
 PREFIX int __ledf2(float64_t x, float64_t y)
 {
-    return f64_le(x, y);
+    return f64_le(x, y) ? -1 : 1;
 }
 
 PREFIX int __gtsf2(float32_t x, float32_t y)
 {
-    return f32_lt(y, x);
+    return f32_lt(y, x) ? 1 : 0;
 }
 
 PREFIX int __gtdf2(float64_t x, float64_t y)
 {
-    return f64_lt(y, x);
+    return f64_lt(y, x) ? 1 : 0;
 }
 
 PREFIX int __gesf2(float32_t x, float32_t y)
 {
-    return f32_le(y, x);
+    return f32_le(y, x) ? -1 : 1;
 }
 
 PREFIX int __gedf2(float64_t x, float64_t y)
 {
-    return f64_le(y, x);
+    return f64_le(y, x) ? -1 : 1;
 }
 
 // Conversion operators.

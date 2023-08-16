@@ -1,6 +1,11 @@
 
 #include <stdio.h>
+#if defined(USE_FLOAT32_C) || defined(USE_FLOAT64_C)
+#include <stdint.h>
+#include <stdbool.h>
+#else
 #include <softfloat.h>
+#endif
 
 // Number of iterations to run for each point.
 #define ITERATIONS 27
@@ -38,6 +43,32 @@ static number_t onethou;
 #define number_four() four
 #define number_from_int(x) (i32_to_f64((x)))
 #define number_from_fixed(x) (f64_div(i32_to_f64((x)), onethou))
+
+#elif defined(USE_FLOAT32_C)
+
+typedef float number_t;
+#define number_init() do { ; } while (0)
+#define number_add(x, y) ((x) + (y))
+#define number_sub(x, y) ((x) - (y))
+#define number_mul(x, y) ((x) * (y))
+#define number_div(x, y) ((x) / (y))
+#define number_gt(x, y)  ((x) > (y))
+#define number_four() 4.0f
+#define number_from_int(x) ((float)(x))
+#define number_from_fixed(x) (((float)(x)) / 1000.0f)
+
+#elif defined(USE_FLOAT64_C)
+
+typedef double number_t;
+#define number_init() do { ; } while (0)
+#define number_add(x, y) ((x) + (y))
+#define number_sub(x, y) ((x) - (y))
+#define number_mul(x, y) ((x) * (y))
+#define number_div(x, y) ((x) / (y))
+#define number_gt(x, y)  ((x) > (y))
+#define number_four() 4.0
+#define number_from_int(x) ((double)(x))
+#define number_from_fixed(x) (((double)(x)) / 1000.0)
 
 #else // USE_FLOAT32
 

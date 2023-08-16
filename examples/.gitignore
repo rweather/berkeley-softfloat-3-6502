@@ -1,12 +1,11 @@
 mandelbrot
-mandelbrot.elf
 mandelbrot_f16
-mandelbrot_f16.elf
 mandelbrot_f32
-mandelbrot_f32.elf
 mandelbrot_f64
-mandelbrot_f64.elf
+mandelbrot_f16_c
+mandelbrot_f32_c
+mandelbrot_f64_c
 simple_example
-simple_example.elf
 sum_of_sqrts
-sum_of_sqrts.elf
+sum_of_sqrts_c
+*.elf
