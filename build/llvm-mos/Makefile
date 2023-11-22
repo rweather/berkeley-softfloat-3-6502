@@ -38,6 +38,8 @@
 
 SOURCE_DIR ?= ../../source
 SPECIALIZE_TYPE ?= 8086
+MOS_TARGET ?= common
+MOS_HOME ?= ~/llvm-mos/bin/
 
 ifeq ($(SOFTFLOAT_NO_ASM),1)
 SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5 -DSOFTFLOAT_NO_ASM
@@ -45,13 +47,13 @@ else
 SOFTFLOAT_OPTS ?= -DINLINE_LEVEL=5 -DSOFTFLOAT_MOS_6502
 endif
 
-SOFTFLOAT_INSTALL_DIR ?= $(shell mos-common-clang --version | grep '^InstalledDir' | sed -e '1,$$s/^InstalledDir: //g')/../mos-platform/common
+SOFTFLOAT_INSTALL_DIR ?= $(shell $(MOS_HOME)mos-common-clang --version | grep '^InstalledDir' | sed -e '1,$$s/^InstalledDir: //g')/../mos-platform/common
 
 DELETE = rm -f
 C_INCLUDES = -I. -I$(SOURCE_DIR)/$(SPECIALIZE_TYPE) -I$(SOURCE_DIR)/include
-COMPILE_C = mos-common-clang -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -Os -Wno-incompatible-library-redeclaration -o $@
-COMPILE_ASM = mos-common-clang -x assembler-with-cpp -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -o $@
-MAKELIB = llvm-ar crs $@
+COMPILE_C = $(MOS_HOME)mos-$(MOS_TARGET)-clang -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -Os -Wno-incompatible-library-redeclaration -o $@
+COMPILE_ASM = $(MOS_HOME)mos-$(MOS_TARGET)-clang -x assembler-with-cpp -c $(SOFTFLOAT_OPTS) $(C_INCLUDES) -o $@
+MAKELIB = $(MOS_HOME)llvm-ar crs $@
 COPY = cp
 
 OBJ = .o
